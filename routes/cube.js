@@ -44,10 +44,21 @@ router.get("/create", authAccess, getUserStatus, (req, res) => {
       creator: req.creator
     })
   })
-  
-//   router.get("/delete", async (req, res) => {
-//     await deleteCube(req.params.id);
-//     res.redirect("/");
-//   })
+
+  router.get('/edit/:id', getUserStatus, authAccess, async (req, res) => {
+    const cube = await getCube(req.params.id);
+    res.render('edit', {
+      title: 'Edit Page',
+      isLogged: req.isLogged,
+      ...cube
+    })
+  })
+
+  router.post('/edit/:id', getUserStatus, authAccess, async(req, res) => {
+    const { name, description, imageUrl, difficulty } = req.body
+    const id = req.params.id;
+    await Cube.updateOne({_id: id}, {name, description, imageUrl, difficulty} )
+    res.redirect('/')
+  })
 
   module.exports = router
