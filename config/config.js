@@ -4,4 +4,4 @@ module.exports = {
         dbURL: `mongodb+srv://user:${process.env.DB_PASSWORD}@softuni-lmx5i.mongodb.net/cubicle?retryWrites=true&w=majority`
     },
     production: {}
-};
+}
