@@ -1,4 +1,4 @@
-const { Router } = require("express");
+const { Router } = require("express")
 const Cube = require('../models/cube')
 const { getCube } = require('../controllers/cubes')
 const { authAccess, getUserStatus } = require('../controllers/user')
@@ -15,7 +15,7 @@ router.get("/create", authAccess, getUserStatus, (req, res) => {
   })
   
   router.post("/create", authAccess, (req, res) => {
-    const { name, description, imageUrl, difficulty } = req.body;
+    const { name, description, imageUrl, difficulty } = req.body
     const token = req.cookies['auth_cookie']
     const decodedObject = jwt.verify(token, privateKey)
 
@@ -46,7 +46,7 @@ router.get("/create", authAccess, getUserStatus, (req, res) => {
   })
 
   router.get('/edit/:id', getUserStatus, authAccess, async (req, res) => {
-    const cube = await getCube(req.params.id);
+    const cube = await getCube(req.params.id)
     res.render('edit', {
       title: 'Edit Page',
       isLogged: req.isLogged,
@@ -56,9 +56,23 @@ router.get("/create", authAccess, getUserStatus, (req, res) => {
 
   router.post('/edit/:id', getUserStatus, authAccess, async(req, res) => {
     const { name, description, imageUrl, difficulty } = req.body
-    const id = req.params.id;
+    const id = req.params.id
     await Cube.updateOne({_id: id}, {name, description, imageUrl, difficulty} )
     res.redirect('/')
   })
 
+  router.get('/delete/:id', getUserStatus, async(req, res) => {
+    const cube = await getCube(req.params.id)
+    res.render('delete', {
+      title: 'Delete Page',
+      isLogged: req.isLogged,
+      ...cube
+    })
+  })
+
+  router.post('/delete/:id', getUserStatus, authAccess, async(req, res) => {
+    const id = req.params.id
+    await Cube.deleteOne({_id: id})
+    res.redirect('/')
+  })
   module.exports = router
