@@ -3,9 +3,13 @@ const router = Router()
 const {saveUser, verifyUser, getUserStatus, guestAccess} = require('../controllers/user')
 
 router.get('/register',getUserStatus, guestAccess, (req, res) => {
+    const error = req.query.error ? 'Username or password is invalid': null
+    console.log('error', error);
+    
     res.render('authentication/registerPage', {
         title: "Register",
-        isLogged: req.isLogged
+        isLogged: req.isLogged,
+        error
     })
 })
 
@@ -17,10 +21,18 @@ router.get('/login', (req, res) => {
 })
 
 router.post('/register', getUserStatus, guestAccess ,async(req, res) => {
-    const status = await saveUser(req, res)
-    if(status) {
-        return res.redirect('/')
+    const { username, password } = req.body
+    if(!password || password.length < 8 || !password.match(/[A-Za-z0-9 ].+/) || !username.match(/[A-Za-z0-9 ].+/)) {
+        console.log('password is invalid');
+       return res.redirect('/register?error=true')
     }
+    const { error } = await saveUser(req, res)
+    console.log(error);
+    
+    // const status = await saveUser(req, res)
+    // if(status) {
+    //     return res.redirect('/')
+    // }
     res.redirect('/login')
 })
 

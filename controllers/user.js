@@ -15,8 +15,15 @@ const saveUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
-    const user = new User({username, password: hashedPassword})
-    const userObject = user.save()
+    const user = new User({username, password})
+    const error = user.validate()
+    if(error.message !== undefined) {
+        return {
+            error: true,
+            message: error.message
+        }
+    }
+    const userObject = new User({ username, password: hashedPassword }).save()
 
     const token = generateToken({
         userID: userObject._id,
