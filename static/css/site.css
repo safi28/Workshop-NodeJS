@@ -250,6 +250,20 @@ h2{
     text-align: center;
     font-style: italic;
 }
+.notifications {
+    margin: 0 auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-align: center;
+    width: 50%;
+    padding: .5%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    background-color: rgb(238, 118, 118);
+    color: white;
+    border-radius: 5%;
+    text-decoration: underline;
+}
 
 footer {
     background: #607588;
