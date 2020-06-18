@@ -250,7 +250,7 @@ h2 {
   text-align: center;
   font-style: italic;
 }
-.notifications {
+.notifications {
   margin: 0 auto;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -262,7 +262,6 @@ h2 {
   background-color: rgb(231, 118, 118);
   color: white;
   border-radius: 5%;
-  text-decoration: underline;
 }
 footer {
   background: #607588;

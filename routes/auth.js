@@ -4,7 +4,6 @@ const {saveUser, verifyUser, getUserStatus, guestAccess} = require('../controlle
 
 router.get('/register',getUserStatus, guestAccess, (req, res) => {
     const error = req.query.error ? 'Username or password is invalid': null
-    console.log('error', error);
     
     res.render('authentication/registerPage', {
         title: "Register",
@@ -26,13 +25,8 @@ router.post('/register', getUserStatus, guestAccess ,async(req, res) => {
         console.log('password is invalid');
        return res.redirect('/register?error=true')
     }
-    const { error } = await saveUser(req, res)
-    console.log(error);
+     await saveUser(req, res)
     
-    // const status = await saveUser(req, res)
-    // if(status) {
-    //     return res.redirect('/')
-    // }
     res.redirect('/login')
 })
 
