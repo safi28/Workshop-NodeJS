@@ -23,19 +23,14 @@ const saveUser = async (req, res) => {
             message: error.message
         }
     }
-    const userObject = new User({ username, password: hashedPassword }).save()
+     new User({ username, password: hashedPassword }).save()
 
-    const token = generateToken({
-        userID: userObject._id,
-        username: userObject.username
-    })
-    res.cookie('auth_cookie', token)
     return true
 }
 
 const verifyUser = async(req, res) => {
     const { username, password } = req.body
-    const user = await User.findOne({username})
+    const user = await User.findOne({ username })
     const status = await bcrypt.compare(password, user.password)
 
     if(status) {
