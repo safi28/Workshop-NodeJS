@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const cubeSchema = new mongoose.Schema({
   name: {
@@ -16,4 +16,4 @@ cubeSchema.path('imageUrl').validate(function(url){
   return url.startsWith('http') || url.startsWith('https')
 }, 'Image url is invalid')
 
-module.exports = mongoose.model("Cube", cubeSchema);
+module.exports = mongoose.model("Cube", cubeSchema)

@@ -1,9 +1,9 @@
-const { accessoryModel, cubeModel } = require("../models");
+const { accessoryModel, cubeModel } = require("../models")
 
 const getAccessories = async () => {
-  const accessories = await accessoryModel.find().lean();
-  return accessories;
-};
+  const accessories = await accessoryModel.find().lean()
+  return accessories
+}
 
 const attachedAccessories = async (cubeId) => {
   try {
@@ -15,4 +15,4 @@ const attachedAccessories = async (cubeId) => {
   }
 }
 
-module.exports = { getAccessories, attachedAccessories };
+module.exports = { getAccessories, attachedAccessories }

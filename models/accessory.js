@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const accessoryScema = new mongoose.Schema({
   name: {
@@ -8,6 +8,6 @@ const accessoryScema = new mongoose.Schema({
   description: String,
   imageUrl: String,
   cubes: [{ type: mongoose.Types.ObjectId, ref: "Cube" }],
-});
+})
 
-module.exports = mongoose.model("Accessories", accessoryScema);
+module.exports = mongoose.model("Accessories", accessoryScema)
