@@ -1,0 +1,144 @@
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
+const jwt = require("jsonwebtoken")
+
+const privateKey = 'secret_key'
+
+const generateToken =  (data) => {
+    const token = jwt.sign(data, privateKey)
+    return token
+}
+
+const saveUser = async (req, res) => {
+    const { username, password } = req.body
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    const user = new User({ username, password })
+    const error = user.validate()
+    if(error.message !== undefined) {
+        return {
+            error: true,
+            message: error.message
+        }
+    }
+    const userObject = new User({ username, password: hashedPassword }).save()
+
+    const token = generateToken({
+        userID: userObject._id,
+        username: userObject.username
+    })
+    res.cookie('auth_cookie', token)
+    return true
+}
+
+const verifyUser = async(req, res) => {
+    const { username, password } = req.body
+    const user = await User.findOne({username})
+    const status = await bcrypt.compare(password, user.password)
+
+    if(status) {
+      const token = generateToken({
+        userID: user._id,
+        username: user.username
+    })
+        res.cookie('auth_cookie', token)
+    }
+}
+
+const getUserStatus = (req, res, next) => {    
+    const token = req.cookies['auth_cookie']
+    
+    if(!token) {
+        req.isLogged = false
+    }
+    try {
+      jwt.verify(token, privateKey)
+      req.isLogged = true
+    } catch(e) {
+        req.isLogged = false        
+    }
+    next()
+}
+
+const guestAccess = (req, res, next) => {
+    const token = req.cookies['auth_cookie']
+    if(token) {
+        return res.redirect('/')
+    }
+    next()
+}
+
+const authAccess = (req, res, next) => {
+    const token = req.cookies['auth_cookie']
+    if(!token) {
+        return res.redirect('/')
+    }
+    try {
+        jwt.verify(token, privateKey)
+        next()
+      } catch(e) {
+          return res.redirect('/')
+      }
+}
+
+module.exports = {
+    saveUser,
+    verifyUser,
+    getUserStatus,
+    guestAccess,
+    authAccess
+}
+
+
+
+
+//// route auth
+const { Router } = require("express")
+const router = Router()
+const {saveUser, verifyUser, getUserStatus, guestAccess} = require('../controllers/user')
+
+router.get('/register',getUserStatus, guestAccess, (req, res) => {
+    const error = req.query.error ? 'Username or password is invalid': null
+    
+    res.render('authentication/registerPage', {
+        title: "Register",
+        isLogged: req.isLogged,
+        error
+    })
+})
+
+router.get('/login', (req, res) => {
+    res.render('authentication/loginPage', {
+        title: "Login Page",
+        isLogged: req.isLogged
+    })
+})
+
+router.post('/register', getUserStatus, guestAccess ,async(req, res) => {
+    const { username, password } = req.body
+    if(!password || password.length < 8 || !password.match(/[A-Za-z0-9 ].+/) || !username.match(/[A-Za-z0-9 ].+/)) {
+        console.log('password is invalid');
+       return res.redirect('/register?error=true')
+    }
+     await saveUser(req, res)
+    
+    res.redirect('/login')
+})
+
+router.post('/login', async(req, res) => {
+    const status = await verifyUser(req, res)
+    if(status) {
+        return res.redirect('/')
+    }
+    res.redirect('/')
+})
+
+router.get('/logout', (req, res) => {
+    res.clearCookie('auth_cookie')
+    req.isLogged = false
+    res.redirect('/')
+})
+
+module.exports = router

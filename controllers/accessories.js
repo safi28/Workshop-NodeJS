@@ -1,4 +1,6 @@
-const { accessoryModel, cubeModel } = require("../models")
+const { accessoryModel } = require("../models")
+const Cube = require('../models/cube')
+const Accessory = require('../models/accessory')
 
 const getAccessories = async () => {
   const accessories = await accessoryModel.find().lean()
@@ -15,4 +17,12 @@ const attachedAccessories = async (cubeId) => {
   }
 }
 
-module.exports = { getAccessories, attachedAccessories }
+const postAccessories = async (id, accessoryId) => {
+  await Cube.findByIdAndUpdate(id, {
+    $addToSet: {
+      accessories: accessoryId
+    }
+  })
+};
+
+module.exports = { getAccessories, attachedAccessories, postAccessories }

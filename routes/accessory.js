@@ -1,12 +1,14 @@
 const { Router } = require("express")
-const { attachedAccessories } = require("../controllers/accessories")
+const { attachedAccessories, getAccessories, postAccessories } = require("../controllers/accessories")
+const { getCube } = require('../controllers/cubes')
 const { authAccess, getUserStatus } = require('../controllers/user')
+const Accessory = require('../models/accessory')
 const router = Router()
 
-router.get("/create/accessory", authAccess, getUserStatus,(req, res) => {
+router.get("/create/accessory", authAccess, getUserStatus, async(req, res) => {
   res.render("createAccessory", {
     title: "Create accessory",
-    isLogged: req.isLogged
+    isLogged: req.isLogged,
   })
 })
 
@@ -21,18 +23,20 @@ router.post("/create/accessory", authAccess ,async (req, res) => {
 
   await accessory.save()
 
-  res.redirect("/create/accessory")
+  res.redirect("/")
 })
 
 router.get("/attach/accessory/:id", authAccess, getUserStatus ,async (req, res, next) => {
-  const { id: cubeId } = req.params
+  const attach = await attachedAccessories(req.params.id)
+  const cubes = await getCube(req.params.id)
   try {
-    const data = await attachedAccessories(cubeId)
-
+    const acccessories = await getAccessories()    
     res.render("attachAccessory", {
       title: "Attach accessory",
-      ...data,
-      isLogged: req.isLogged
+      acccessories,
+      ...cubes,
+      isLogged: req.isLogged,
+      attachAccessory: attach
     })
   } catch (err) {
     next(err)
@@ -41,9 +45,9 @@ router.get("/attach/accessory/:id", authAccess, getUserStatus ,async (req, res, 
 
 router.post("/attach/accessory/:id", async (req, res, next) => {
   const { accessory: accessoryId } = req.body
-  const { id: cubeId } = req.params
+  const cubeId = req.params.id  
   try {
-    await updateCube(cubeId, accessoryId)
+    await postAccessories(cubeId, accessoryId)
     res.redirect(`/details/${cubeId}`)
   } catch (err) {
     next(err)

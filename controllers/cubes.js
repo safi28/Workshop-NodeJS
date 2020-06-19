@@ -18,5 +18,5 @@ const deleteCube = async (id) => {
 module.exports = {
   getCubes,
   getCube,
-  deleteCube,
+  deleteCube
 }
