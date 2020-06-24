@@ -8,5 +8,5 @@
 > node index
 --- 
 ## Tools and technologies🔍
-> ExpressJS, Handlebars, Bcrypt, MongoDB(mongoose)
+> ExpressJS, express handlebars, Bcrypt, MongoDB(mongoose)
 
